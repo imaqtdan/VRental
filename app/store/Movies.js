@@ -5,18 +5,27 @@ Ext.define('RentalApp.store.Movies', {
 
     proxy: {
         type: 'rest',
-        url: 'http://localhost:5283/api/Movies',
-        reader: {
-            type: 'json',
-            rootProperty: 'items'
-        },
-        writer: {
-            type: 'json'
-        },
         api: {
+            read: 'http://localhost:5283/api/Movies',
             create: 'http://localhost:5283/api/Movies/New',
             update: 'http://localhost:5283/api/Movies/Update',
             destroy: 'http://localhost:5283/api/Movies/Delete'
+        },
+        cors: true,
+        useDefaultXhrHeader: false,
+        reader: {
+            type: 'json',
+            rootProperty: 'data'
+        },
+        writer: {
+            type: 'json',
+            writeAllFields: true
+        },
+        actionMethods: {
+            create: 'POST',
+            read: 'GET',
+            update: 'PUT',
+            destroy: 'DELETE'
         }
     },
 
