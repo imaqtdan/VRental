@@ -1,6 +1,7 @@
 Ext.define('RentalApp.store.Customers', {
     extend: 'Ext.data.Store',
     alias: 'store.customers',
+
     model: 'RentalApp.model.Customers',
 
     proxy: {
@@ -9,7 +10,7 @@ Ext.define('RentalApp.store.Customers', {
             read: 'http://localhost:5283/api/Customers',
             create: 'http://localhost:5283/api/Customers/New',
             update: 'http://localhost:5283/api/Customers/Update',
-            destroy: 'http://localhost:5283/api/Customers/Delete'
+            destroy: 'http://localhost:5283/api/Customers/Delete' 
         },
         cors: true,
         useDefaultXhrHeader: false,
@@ -28,7 +29,5 @@ Ext.define('RentalApp.store.Customers', {
             destroy: 'DELETE'
         }
     }
-
-    //autoLoad: true,
-    //autoSync: true
+    
 });

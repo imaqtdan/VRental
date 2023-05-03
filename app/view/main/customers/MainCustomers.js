@@ -39,40 +39,44 @@ Ext.define('RentalApp.view.main.CustomersList', {
                 iconCls: 'x-fa fa-edit',
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
-                    var record = grid.getStore().getAt(rowIndex);
-                    var customerId = record.get('customerId');
-                    var window = Ext.create({
-                        xtype: 'editcustomerwindow',
-                        customerId: customerId
+                    var selectedRecord = grid.getStore().getAt(rowIndex);
+                    var form = Ext.create('RentalApp.view.main.CustomerForm', {
+                        viewModel: {
+                            data: {
+                                customer: selectedRecord
+                            }
+                        }
                     });
-            
-                    // Load the record data into the form fields
-                    var form = window.down('form');
-                    form.loadRecord(record);
-            
-                    window.show();
+                    form.grid = grid;
+                    form.show();
                 }
             }, {
                 iconCls: 'x-fa fa-trash',
                 tooltip: 'Delete',
-                handler: function(grid, rowIndex, colIndex) {
-                    var record = grid.getStore().getAt(rowIndex);
-                    var customerId = record.get('customerId');
-                    var window = Ext.create({
-                        xtype: 'deletecustomerwindow',
-                        customerId: customerId
+                handler: function(grid, rowIndex, colIndex, item, e, record) {
+                    var stores = grid.getStore();
+                    var idnum = record.get('customerId');
+                    var fname = record.get('firstName');
+                    var lname = record.get('lastName');
+                    Ext.Msg.confirm('Delete Customer', 'Are you sure you want to delete customer: ' + idnum + ' (' + fname + ' ' + lname + ')?', function(btn) {
+                        if (btn === 'yes') {
+                            var trueid = record.get('customerId');
+                            record.set('id', trueid);
+                            stores.remove(record);
+                            stores.sync({
+                                success: function(){
+                                    Ext.toast('Customer Deleted.', 'Success');
+                                    console.log('Delete Operation Success');
+                                },
+                                failure: function(){
+                                    Ext.toast('Failed to Delete Customer', 'Failed ');
+                                    console.log('Delete Operation Failed');
+                                }
+                            });
+                        }
                     });
-                    window.show();
                 }
             }]
-        }],
-
-        buttons: [{
-            text: 'Add Customer',
-            handler: function() {
-                var window = Ext.create('RentalApp.view.main.AddCustomerWindow');
-                window.show();
-            }
         }],
 
         tbar: [{
@@ -87,6 +91,12 @@ Ext.define('RentalApp.view.main.CustomersList', {
             xtype: 'button',
             text: 'Search',
             handler: 'onSearchButtonClick'
+        }, {
+            xtype: 'button',
+            text: 'Add Customer',
+            handler: function() {
+                Ext.create('RentalApp.view.main.AddCustomerModal');
+        }
         }],
 
         bbar: {
@@ -103,12 +113,21 @@ Ext.define('RentalApp.view.main.CustomersList', {
             ]
         },
 
-         listeners: {
-             afterrender: function() {
-                 var customersStore = this.getViewModel().getStore('customers'); // get the store
-                 customersStore.load(); // load the store
-             }
-         },
+        listeners: {
+            afterrender: function() {
+                var me = this;
+                var customersStore = Ext.create('RentalApp.store.Customers'); // create a new store instance
+                customersStore.load({
+                    callback: function(records, operation, success) {
+                        if (success) {
+                            me.getViewModel().set('customers', customersStore); // set the store to the view model
+                        } else {
+                            Ext.toast('Failed to load customers', 'Failed ');
+                        }
+                    }
+                });
+            }
+        },
         
         controller: 'customerslist'
 });

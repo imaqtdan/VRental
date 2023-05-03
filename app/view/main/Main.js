@@ -79,7 +79,7 @@ Ext.define('RentalApp.view.main.Main', {
         // The following grid shares a store with the classic version's grid as well!
         items: [{
             xtype: 'customerslist'
-        }]
+        },]
     }, {
         title: 'Movies',
         iconCls: 'fa-film',
