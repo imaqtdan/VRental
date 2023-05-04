@@ -1,16 +1,16 @@
-Ext.define('RentalApp.store.Customers', {
+Ext.define('RentalApp.store.Rentals', {
     extend: 'Ext.data.Store',
-    alias: 'store.customers',
-
-    model: 'RentalApp.model.Customers',
+    alias: 'store.rentals',
+    
+    model: 'RentalApp.model.Rentals',
 
     proxy: {
         type: 'rest',
         api: {
-            read: 'http://localhost:5283/api/Customers',
-            create: 'http://localhost:5283/api/Customers/New',
-            update: 'http://localhost:5283/api/Customers/Edit',
-            destroy: 'http://localhost:5283/api/Customers/Delete' 
+            read: 'http://localhost:5283/api/Rentals',
+            create: 'http://localhost:5283/api/Rentals/New',
+            update: 'http://localhost:5283/api/Rentals/Edit',
+            destroy: 'http://localhost:5283/api/Rentals/Delete'
         },
         cors: true,
         useDefaultXhrHeader: false,
@@ -29,6 +29,6 @@ Ext.define('RentalApp.store.Customers', {
             destroy: 'DELETE'
         }
     },
-    
+
     pageSize: 10
 });

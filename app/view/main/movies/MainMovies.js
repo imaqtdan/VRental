@@ -14,89 +14,68 @@ Ext.define('RentalApp.view.main.MoviesList', {
 
     title: {
         bind: {
-            text: '{moiviespage}'
+            text: '{moviespage}'
         },
         flex: 0
     },
 
     columns: [
-        { text: 'ID',  dataIndex: 'movieId', flex: 1 },
         { text: 'Title', dataIndex: 'title', flex: 1 },
-        { text: 'Description', dataIndex: 'description', flex: 1 },
+        { text: 'Description', dataIndex: 'description', flex: 1     },
         { text: 'Genre', dataIndex: 'genre', flex: 1 },
-        { text: 'Release Date', dataIndex: 'releaseDate', flex: 1 },
-        { text: 'Rental Price', dataIndex: 'rentalPrice', flex: 1 },
+        { text: 'Release Date', dataIndex: 'releaseDate', flex: 1, xtype: 'datecolumn', format: 'Y-m-d' },
+        { text: 'Rental Price', dataIndex: 'rentalPrice', flex: 1, xtype: 'numbercolumn', format: '₱ 0.00' },
         { text: 'Stock', dataIndex: 'stock', flex: 1 },
-        { 
-            text: 'Availability',
-            dataIndex: 'isActive',
-            flex: 1,
-            renderer: function(value) {
-                return value ? 'Available' : 'Unavailable';
-            }
-        },
-        {
-            xtype: 'actioncolumn',
-            text: 'Action',
-            flex: 1,
-            layout: {
-                type: 'hbox',
-                pack: 'center',
-                align: 'stretch'
-            },
+        { text: 'Available', dataIndex: 'isActive', flex: 1, xtype: 'booleancolumn', trueText: 'Available', falseText: 'Unavailable' },
+        { xtype: 'actioncolumn', text: 'Action', flex: 1, layout: { type: 'hbox', pack: 'center', align: 'stretch' },
             items: [{
                 iconCls: 'x-fa fa-edit',
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
-                var record = grid.getStore().getAt(rowIndex);
-                var movieId = record.get('movieId');
-                var window = Ext.create({
-                    xtype: 'editmoviewindow',
-                    movieId: movieId
-                });
-    
-                // Load the record data into the form fields
-                var form = window.down('form');
-                form.loadRecord(record);
-    
-                // Get the "releaseDate" field in the form
-                var releaseDateField = form.getForm().findField('releaseDate');
-    
-                // Get the date value from the record
-                var releaseDateValue = record.get('releaseDate');
-                
-                // Check if the releaseDateValue is not null or undefined
-                if (releaseDateValue) {
-                    // Format the date value to the 'Y-m-d' format
-                    var formattedDate = Ext.Date.format(new Date(releaseDateValue), 'Y-m-d');
-    
-                    // Set the value of the datefield to the formatted date value
-                    releaseDateField.setValue(formattedDate);
-                }
-    
-                window.show();
+                    var selectedRecord = grid.getStore().getAt(rowIndex);
+                    
+                    // Format the releaseDate value to 'Y-m-d' format
+                    var formattedDate = selectedRecord.get('releaseDate') ? Ext.Date.format(new Date(selectedRecord.get('releaseDate')), 'Y-m-d') : null;
+                    
+                    var form = Ext.create('RentalApp.view.main.EditMovieModal', {
+                        movie: selectedRecord,
+                        viewModel: {
+                            data: {
+                                movie: selectedRecord,
+                                releaseDate: formattedDate
+                            }
+                        }
+                    });
+                    console.log(form.getViewModel().getData());
+                    form.grid = grid;
+                    form.show();
                 }
             }, {
                 iconCls: 'x-fa fa-trash',
                 tooltip: 'Delete',
-                handler: function(grid, rowIndex, colIndex) {
-                    var record = grid.getStore().getAt(rowIndex);
-                    var movieId = record.get('movieId');
-                    var window = Ext.create({
-                        xtype: 'deletemoviewindow',
-                        movieId: movieId
+                handler: function(grid, rowIndex, colIndex, item, e, record) {
+                    var stores = grid.getStore();
+                    var idnum = record.get('movieId');
+                    var title = record.get('title');
+                    Ext.Msg.confirm('Delete Movie', 'Are you sure you want to delete movie: ' + idnum + ' (' + title + ') ?', function(btn) {
+                        if (btn === 'yes') {
+                            var trueid = record.get('movieId');
+                            record.set('id', trueid);
+                            stores.remove(record);
+                            stores.sync({
+                                success: function(){
+                                    Ext.toast('Movie Deleted.', 'Success');
+                                    console.log('Delete Operation Success');
+                                },
+                                failure: function(){
+                                    Ext.toast('Failed to Delete Movie', 'Failed ');
+                                    console.log('Delete Operation Failed');
+                                }
+                            });
+                        }
                     });
-                    window.show();
                 }
             }]
-        }],
-    
-        buttons: [{
-            text: 'Add Movies',
-            handler: function() {
-                var window = Ext.create('MyApp.view.main.AddMovieWindow');
-                window.show();
-            }
         }],
 
         tbar: [{
@@ -111,6 +90,13 @@ Ext.define('RentalApp.view.main.MoviesList', {
             xtype: 'button',
             text: 'Search',
             handler: 'onSearchButtonClick'
+        }, '->', {
+            xtype: 'button',
+            iconCls: 'x-fa fa-plus',
+            text: 'Add Movie',
+            handler: function() {
+                Ext.create('RentalApp.view.main.AddMovieModal');
+        }
         }],
 
         bbar: {
@@ -127,12 +113,21 @@ Ext.define('RentalApp.view.main.MoviesList', {
             ]
         },
 
-         listeners: {
-             afterrender: function() {
-                 var customersStore = this.getViewModel().getStore('movies'); // get the store
-                 customersStore.load(); // load the store
-             }
-         },
+        listeners: {
+            afterrender: function() {
+                var me = this;
+                var moviesStore = Ext.create('RentalApp.store.Movies'); // create a new store instance
+                moviesStore.load({
+                    callback: function(records, operation, success) {
+                        if (success) {
+                            me.getViewModel().set('movies', moviesStore); // set the store to the view model
+                        } else {
+                            Ext.toast('Failed to load movies', 'Failed ');
+                        }
+                    }
+                });
+            }
+        },
         
         controller: 'movieslist'
 });

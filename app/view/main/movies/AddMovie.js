@@ -1,90 +1,118 @@
-Ext.define('MyApp.view.main.AddMovieWindow', {
+Ext.define('RentalApp.view.main.AddMovieModal', {
     extend: 'Ext.window.Window',
-    xtype: 'addmoviewindow',
-
+    xtype: 'addmoviemodal',
+    
     title: 'Add Movie',
+    modal: true,
     width: 400,
     layout: 'fit',
-    modal: true,
-
+    closable: true,
+    resizable: false,
+    autoShow: true,
+    
     items: [{
         xtype: 'form',
+        reference: 'addMovieForm',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
         bodyPadding: 10,
-        defaultType: 'textfield',
+        fieldDefaults: {
+            labelAlign: 'top',
+            msgTarget: 'side',
+            anchor: '100%'
+        },
         items: [{
+            xtype: 'textfield',
             fieldLabel: 'Title',
             name: 'title',
+            bind: '{movie.title}',
             allowBlank: false
         }, {
+            xtype: 'textarea',
             fieldLabel: 'Description',
             name: 'description',
+            bind: '{movie.description}',
             allowBlank: false
         }, {
+            xtype: 'textfield',
             fieldLabel: 'Genre',
             name: 'genre',
-            allowBlank: false,
+            bind: '{movie.genre}',
+            allowBlank: false
         }, {
             xtype: 'datefield',
             fieldLabel: 'Release Date',
             name: 'releaseDate',
+            bind: '{movie.releaseDate}',
             allowBlank: false,
-            format: 'Y-m-d', // set date format to YYYY-MM-DD
+            format: 'Y-m-d',
         }, {
+            xtype: 'textfield',
             fieldLabel: 'Rental Price',
             name: 'rentalPrice',
+            bind: '{movie.rentalPrice}',
             allowBlank: false,
             maskRe: /[0-9]/,
         }, {
-            fieldLabel: 'Stock Count',
+            xtype: 'textfield',
+            fieldLabel: 'Stock',
             name: 'stock',
+            bind: '{movie.stock}',
             allowBlank: false,
             maskRe: /[0-9]/,
         }, {
             xtype: 'checkboxfield',
             fieldLabel: 'Availability',
             name: 'isActive',
+            bind: '{movie.isActive}',
             boxLabel: 'Available',
             inputValue: true,
             uncheckedValue: false,
             allowBlank: false
         },]
     }],
-
+    
     buttons: [{
         text: 'Save',
-        handler: function(button) {
-            var form = button.up('window').down('form');
-            if (form.isValid()) {
-                var values = form.getValues();
-                var url = 'http://localhost:5283/api/Movies/New';
-                var options = {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(values)
-                };
-
-                fetch(url, options)
-                    .then(function(response) {
-                        if (response.ok) {
-                            Ext.toast('Movie added successfully', 'Success');
-                            moviesStore.load();  // loads the store data and triggers the load event
-                            button.up('window').close();
-                        } else {
-                            Ext.toast('Failed to add movie', 'Error');
-                        }
-                    })
-                    .catch(function(error) {
-                        console.error('Error:', error);
-                        Ext.toast('Failed to add movie', 'Error');
-                    });
+        formBind: true,
+        disabled: true,
+        listeners: {
+            beforerender: function(button) {
+                var form = button.up('window').down('form');
+                form.on('validitychange', function(form, valid) {
+                    button.setDisabled(!valid);
+                });
             }
+        },
+        handler: function() {
+            var me = this;
+            var form = me.up('window').down('form');
+            var values = form.getValues();
+            var grid = Ext.ComponentQuery.query('movieslist')[0];
+            var store = grid.getStore();
+            var newMovie = Ext.create('RentalApp.model.Movies', values);
+
+            console.log(newMovie);
+
+            store.add(newMovie);
+            store.sync({
+                success: function(){
+                    Ext.toast('Movie Added.', 'Success');
+                    console.log('Add Operation Success');
+                },
+                failure: function(){
+                    Ext.toast('Failed to Add Movie', 'Failed ');
+                    console.log('Add Operation Failed');
+                }
+            });
+            me.up('window').close();
         }
     }, {
         text: 'Cancel',
-        handler: function(button) {
-            button.up('window').close();
+        handler: function() {
+            this.up('window').close();
         }
     }]
 });

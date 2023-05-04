@@ -20,7 +20,7 @@ Ext.define('RentalApp.view.main.CustomersList', {
     },
 
     columns: [
-        { text: 'ID',  dataIndex: 'customerId', flex: 1 },
+        //{ text: 'ID',  dataIndex: 'customerId', flex: 1 },
         { text: 'First Name', dataIndex: 'firstName', flex: 1 },
         { text: 'Last Name', dataIndex: 'lastName', flex: 1 },
         { text: 'Email Address', dataIndex: 'emailAddress', flex: 1 },
@@ -40,7 +40,8 @@ Ext.define('RentalApp.view.main.CustomersList', {
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    var form = Ext.create('RentalApp.view.main.CustomerForm', {
+                    var form = Ext.create('RentalApp.view.main.EditCustomerModal', {
+                        customer: selectedRecord,
                         viewModel: {
                             data: {
                                 customer: selectedRecord
@@ -91,8 +92,9 @@ Ext.define('RentalApp.view.main.CustomersList', {
             xtype: 'button',
             text: 'Search',
             handler: 'onSearchButtonClick'
-        }, {
+        }, '->', {
             xtype: 'button',
+            iconCls: 'x-fa fa-plus',
             text: 'Add Customer',
             handler: function() {
                 Ext.create('RentalApp.view.main.AddCustomerModal');
@@ -101,16 +103,10 @@ Ext.define('RentalApp.view.main.CustomersList', {
 
         bbar: {
             xtype: 'pagingtoolbar',
-            displayInfo: true,
-            items: [
-                '-',
-                {
-                    text: 'Refresh',
-                    handler: function() {
-                        this.up('grid').getStore().reload();
-                    }
-                }
-            ]
+            bind: {
+                store: '{customers}'
+            },
+            displayInfo: true
         },
 
         listeners: {

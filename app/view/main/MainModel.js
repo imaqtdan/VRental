@@ -8,13 +8,10 @@ Ext.define('RentalApp.view.main.MainModel', {
 
     stores: {
         customers: {
-            storeId: 'customers', // this is important to retrieve the store later using Ext.getStore('Customers')
             type: 'customers',
-            pageSize: 10
         },
         movies: {
             type: 'movies',
-            pageSize: 10
         },
     },
 

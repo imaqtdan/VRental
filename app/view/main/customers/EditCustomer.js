@@ -1,20 +1,22 @@
-Ext.define('RentalApp.view.main.CustomerForm', {
+Ext.define('RentalApp.view.main.EditCustomerModal', {
     extend: 'Ext.window.Window',
-    xtype: 'customerform',
-
+    xtype: 'editcustomermodal',
+    
     title: 'Edit Customer',
     modal: true,
     width: 400,
-    height: 400,
     layout: 'fit',
-
+    closable: true,
+    resizable: false,
+    autoShow: true,
+    
     config: {
-        grid: null
+        customer: null
     },
 
     items: [{
         xtype: 'form',
-        reference: 'form',
+        reference: 'editCustomerForm',
         layout: {
             type: 'vbox',
             align: 'stretch'
@@ -27,70 +29,88 @@ Ext.define('RentalApp.view.main.CustomerForm', {
         },
         items: [{
             xtype: 'hiddenfield',
-            name: 'customerId',
+            name: 'id',
             bind: '{customer.customerId}'
         }, {
             xtype: 'textfield',
-            name: 'firstName',
             fieldLabel: 'First Name',
+            name: 'firstName',
             bind: '{customer.firstName}',
             allowBlank: false
         }, {
             xtype: 'textfield',
-            name: 'lastName',
             fieldLabel: 'Last Name',
+            name: 'lastName',
             bind: '{customer.lastName}',
             allowBlank: false
         }, {
             xtype: 'textfield',
-            name: 'emailAddress',
             fieldLabel: 'Email Address',
+            name: 'emailAddress',
             bind: '{customer.emailAddress}',
+            allowBlank: false,
             vtype: 'email'
         }, {
             xtype: 'textfield',
-            name: 'phoneNumber',
             fieldLabel: 'Phone Number',
-            bind: '{customer.phoneNumber}'
-        }, {
-            xtype: 'textfield',
-            name: 'address',
-            fieldLabel: 'Address',
-            bind: '{customer.address}'
-        }],
-        buttons: [{
-            text: 'Save',
-            formBind: true,
-            disabled: true,
-            handler: function(btn) {
-                var form = btn.up('customerform').down('form');
-                var grid = btn.up('customerform').getConfig('grid');
-                if (form.isValid()) {
-                    var values = form.getValues();
-                    var store = grid.getStore();
-                    var selectedRecord = grid.getSelectionModel().getSelection()[0];
-                    selectedRecord.set(values);
-                    store.sync({
-                        success: function() {
-                            Ext.toast('Customer data updated successfully');
-                            grid.getSelectionModel().deselectAll();
-                            form.reset();
-                            btn.up('window').close();
-                        },
-                        failure: function(batch, options) {
-                            Ext.toast('Failed to update customer data');
-                        },
-                        scope: this
-                    });
-                } else {
-                    Ext.toast('Please fill out all required fields');
+            name: 'phoneNumber',
+            bind: '{customer.phoneNumber}',
+            allowBlank: false,
+            inputMask: '99999999999',
+            validator: function(value) {
+                if (!/^\d{11}$/.test(value)) {
+                    return 'Phone number must be 11 digits long';
                 }
+                return true;
             }
         }, {
-            text: 'Cancel',
-            handler: function(btn) {
-                btn.up('window').close();
-            }
+            xtype: 'textarea',
+            fieldLabel: 'Address',
+            name: 'address',
+            bind: '{customer.address}',
+            allowBlank: false
         }]
+    }],
+    
+    buttons: [{
+        text: 'Save',
+        formBind: true,
+        disabled: true,
+        listeners: {
+            beforerender: function(button) {
+                var form = button.up('window').down('form');
+                form.on('validitychange', function(form, valid) {
+                    button.setDisabled(!valid);
+                });
+            }
+        },
+        handler: function() {
+            var me = this;
+            var form = me.up('window').down('form');
+            var customer = me.up('window').getCustomer();
+            form.updateRecord(customer);
+            var store = me.up('window').grid.getStore();
+            console.log(customer);
+
+            store.sync({
+                success: function(){
+                    Ext.toast('Customer Updated.', 'Success');
+                    console.log('Update Operation Success');
+                },
+                failure: function(){
+                    Ext.toast('Failed to Update Customer', 'Failed');
+                    console.log('Update Operation Failed');
+                }
+            });
+            me.up('window').close();
+        }
+    }, {
+        text: 'Cancel',
+        handler: function() {
+            var me = this;
+            var grid = Ext.ComponentQuery.query('customerslist')[0];
+            grid.getStore().reload();
+            me.up('window').close();
+        }
     }]
 });

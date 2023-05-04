@@ -1,6 +1,7 @@
 Ext.define('RentalApp.store.Movies', {
     extend: 'Ext.data.Store',
     alias: 'store.movies',
+    
     model: 'RentalApp.model.Movies',
 
     proxy: {
@@ -8,7 +9,7 @@ Ext.define('RentalApp.store.Movies', {
         api: {
             read: 'http://localhost:5283/api/Movies',
             create: 'http://localhost:5283/api/Movies/New',
-            update: 'http://localhost:5283/api/Movies/Update',
+            update: 'http://localhost:5283/api/Movies/Edit',
             destroy: 'http://localhost:5283/api/Movies/Delete'
         },
         cors: true,
@@ -29,6 +30,5 @@ Ext.define('RentalApp.store.Movies', {
         }
     },
 
-    //autoLoad: true,
-    //autoSync: true
+    pageSize: 10
 });

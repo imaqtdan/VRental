@@ -5,7 +5,6 @@ Ext.define('RentalApp.view.main.AddCustomerModal', {
     title: 'Add Customer',
     modal: true,
     width: 400,
-    height: 400,
     layout: 'fit',
     closable: true,
     resizable: false,
@@ -28,32 +27,55 @@ Ext.define('RentalApp.view.main.AddCustomerModal', {
             xtype: 'textfield',
             fieldLabel: 'First Name',
             name: 'firstName',
+            bind: '{customer.firstName}',
             allowBlank: false
         }, {
             xtype: 'textfield',
             fieldLabel: 'Last Name',
             name: 'lastName',
+            bind: '{customer.lastName}',
             allowBlank: false
         }, {
             xtype: 'textfield',
             fieldLabel: 'Email Address',
             name: 'emailAddress',
-            allowBlank: false
+            bind: '{customer.emailAddress}',
+            allowBlank: false,
+            vtype: 'email'
         }, {
             xtype: 'textfield',
             fieldLabel: 'Phone Number',
             name: 'phoneNumber',
-            allowBlank: false
+            bind: '{customer.phoneNumber}',
+            allowBlank: false,
+            inputMask: '99999999999',
+            validator: function(value) {
+                if (!/^\d{11}$/.test(value)) {
+                    return 'Phone number must be 11 digits long';
+                }
+                return true;
+            }
         }, {
-            xtype: 'textfield',
+            xtype: 'textarea',
             fieldLabel: 'Address',
             name: 'address',
+            bind: '{customer.address}',
             allowBlank: false
         }]
     }],
     
     buttons: [{
         text: 'Save',
+        formBind: true,
+        disabled: true,
+        listeners: {
+            beforerender: function(button) {
+                var form = button.up('window').down('form');
+                form.on('validitychange', function(form, valid) {
+                    button.setDisabled(!valid);
+                });
+            }
+        },
         handler: function() {
             var me = this;
             var form = me.up('window').down('form');
@@ -61,6 +83,9 @@ Ext.define('RentalApp.view.main.AddCustomerModal', {
             var grid = Ext.ComponentQuery.query('customerslist')[0];
             var store = grid.getStore();
             var newCustomer = Ext.create('RentalApp.model.Customers', values);
+
+            console.log(store);
+
             store.add(newCustomer);
             store.sync({
                 success: function(){
