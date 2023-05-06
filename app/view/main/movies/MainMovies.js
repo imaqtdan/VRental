@@ -33,12 +33,14 @@ Ext.define('RentalApp.view.main.MoviesList', {
                 tooltip: 'Add to Cart',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    //console.log(selectedRecord);
-                    var cartStore = Ext.getStore('cartItems');
-                    cartStore.add(selectedRecord);
-                    Ext.toast('Movie added to cart', 'Success');
-                    var cartItemsStore = Ext.getStore('cartItems');
-                    //console.log(cartItemsStore.getCount());
+                    if (selectedRecord.get('isActive')) {
+                        var cartStore = Ext.getStore('cartItems');
+                        cartStore.add(selectedRecord);
+                        Ext.toast('Movie added to cart', 'Success');
+                        var cartItemsStore = Ext.getStore('cartItems');
+                    } else {
+                        Ext.toast('Movie is unavailable and cannot be added to cart', 'Error');
+                    }
                 }
             }, {
                 iconCls: 'x-fa fa-edit',
