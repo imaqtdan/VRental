@@ -16,7 +16,6 @@ Ext.define('RentalApp.view.main.CustomersList', {
         bind: {
             text: '{customerspage}'
         },
-        flex: 0
     },
 
     columns: [
@@ -26,10 +25,7 @@ Ext.define('RentalApp.view.main.CustomersList', {
         { text: 'Email Address', dataIndex: 'emailAddress', flex: 1 },
         { text: 'Phone Number', dataIndex: 'phoneNumber', flex: 1 },
         { text: 'Address', dataIndex: 'address', flex: 1 },
-        {
-            xtype: 'actioncolumn',
-            text: 'Action',
-            flex: 1,
+        { xtype: 'actioncolumn', text: 'Action', flex: 1,
             layout: {
                 type: 'hbox',
                 pack: 'center',
@@ -68,16 +64,29 @@ Ext.define('RentalApp.view.main.CustomersList', {
                                 success: function(){
                                     Ext.toast('Customer Deleted.', 'Success');
                                     console.log('Delete Operation Success');
+                                    var grid = Ext.ComponentQuery.query('customerslist')[0];
+                                    grid.getStore().reload();
                                 },
                                 failure: function(){
                                     Ext.toast('Failed to Delete Customer', 'Failed ');
                                     console.log('Delete Operation Failed');
+                                    var grid = Ext.ComponentQuery.query('customerslist')[0];
+                                    grid.getStore().reload();
                                 }
                             });
                         }
                     });
                 }
             }]
+        }],
+
+        dockedItems: [{
+            xtype: 'pagingtoolbar',
+            bind: {
+                store: '{customers}'
+            },
+            dock: 'bottom',
+            displayInfo: true
         }],
 
         tbar: [{
@@ -100,14 +109,6 @@ Ext.define('RentalApp.view.main.CustomersList', {
                 Ext.create('RentalApp.view.main.AddCustomerModal');
         }
         }],
-
-        bbar: {
-            xtype: 'pagingtoolbar',
-            bind: {
-                store: '{customers}'
-            },
-            displayInfo: true
-        },
 
         listeners: {
             afterrender: function() {

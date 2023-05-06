@@ -103,7 +103,6 @@
                 var movie = me.up('window').getMovie();
                 form.updateRecord(movie);
                 var store = me.up('window').grid.getStore();
-                console.log(movie);
                 store.sync({
                     success: function(){
                         Ext.toast('Movie Updated.', 'Success');

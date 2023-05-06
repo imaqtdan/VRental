@@ -90,8 +90,6 @@ Ext.define('RentalApp.view.main.EditCustomerModal', {
             var customer = me.up('window').getCustomer();
             form.updateRecord(customer);
             var store = me.up('window').grid.getStore();
-            console.log(customer);
-
             store.sync({
                 success: function(){
                     Ext.toast('Customer Updated.', 'Success');

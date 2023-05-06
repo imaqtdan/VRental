@@ -13,6 +13,10 @@ Ext.define('RentalApp.view.main.MainModel', {
         movies: {
             type: 'movies',
         },
+        cartItems: {
+            storeId: 'cartItems',
+            type: 'cartItems'
+        },
     },
 
     data: {

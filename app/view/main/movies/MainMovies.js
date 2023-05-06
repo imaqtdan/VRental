@@ -9,7 +9,7 @@ Ext.define('RentalApp.view.main.MoviesList', {
     viewModel: 'main',
 
     bind: {
-        store: '{movies}'
+        store: '{movies}',
     },
 
     title: {
@@ -29,6 +29,18 @@ Ext.define('RentalApp.view.main.MoviesList', {
         { text: 'Available', dataIndex: 'isActive', flex: 1, xtype: 'booleancolumn', trueText: 'Available', falseText: 'Unavailable' },
         { xtype: 'actioncolumn', text: 'Action', flex: 1, layout: { type: 'hbox', pack: 'center', align: 'stretch' },
             items: [{
+                iconCls: 'fa fa-plus-square',
+                tooltip: 'Add to Cart',
+                handler: function(grid, rowIndex, colIndex) {
+                    var selectedRecord = grid.getStore().getAt(rowIndex);
+                    //console.log(selectedRecord);
+                    var cartStore = Ext.getStore('cartItems');
+                    cartStore.add(selectedRecord);
+                    Ext.toast('Movie added to cart', 'Success');
+                    var cartItemsStore = Ext.getStore('cartItems');
+                    //console.log(cartItemsStore.getCount());
+                }
+            }, {
                 iconCls: 'x-fa fa-edit',
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
@@ -46,7 +58,6 @@ Ext.define('RentalApp.view.main.MoviesList', {
                             }
                         }
                     });
-                    console.log(form.getViewModel().getData());
                     form.grid = grid;
                     form.show();
                 }
@@ -66,16 +77,29 @@ Ext.define('RentalApp.view.main.MoviesList', {
                                 success: function(){
                                     Ext.toast('Movie Deleted.', 'Success');
                                     console.log('Delete Operation Success');
+                                    var grid = Ext.ComponentQuery.query('movieslist')[0];
+                                    grid.getStore().reload();
                                 },
                                 failure: function(){
                                     Ext.toast('Failed to Delete Movie', 'Failed ');
                                     console.log('Delete Operation Failed');
+                                    var grid = Ext.ComponentQuery.query('movieslist')[0];
+                                    grid.getStore().reload();
                                 }
                             });
                         }
                     });
                 }
             }]
+        }],
+
+        dockedItems: [{
+            xtype: 'pagingtoolbar',
+            bind: {
+                store: '{movies}'
+            },
+            dock: 'bottom',
+            displayInfo: true
         }],
 
         tbar: [{
@@ -96,22 +120,16 @@ Ext.define('RentalApp.view.main.MoviesList', {
             text: 'Add Movie',
             handler: function() {
                 Ext.create('RentalApp.view.main.AddMovieModal');
-        }
+        }, 
+        }, {
+            xtype: 'button',
+            iconCls: 'fa fa-shopping-cart',
+            text: 'View Cart',
+            handler: function() {
+                var rentMovieModal = Ext.create('RentalApp.view.main.RentalCart');
+                rentMovieModal.show();
+            }
         }],
-
-        bbar: {
-            xtype: 'pagingtoolbar',
-            displayInfo: true,
-            items: [
-                '-',
-                {
-                    text: 'Refresh',
-                    handler: function() {
-                        this.up('grid').getStore().reload();
-                    }
-                }
-            ]
-        },
 
         listeners: {
             afterrender: function() {

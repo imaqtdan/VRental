@@ -83,18 +83,19 @@ Ext.define('RentalApp.view.main.AddCustomerModal', {
             var grid = Ext.ComponentQuery.query('customerslist')[0];
             var store = grid.getStore();
             var newCustomer = Ext.create('RentalApp.model.Customers', values);
-
-            console.log(store);
-
             store.add(newCustomer);
             store.sync({
                 success: function(){
                     Ext.toast('Customer Added.', 'Success');
                     console.log('Add Operation Success');
+                    var grid = Ext.ComponentQuery.query('customerslist')[0];
+                    grid.getStore().reload();
                 },
                 failure: function(){
                     Ext.toast('Failed to Add Customer', 'Failed ');
                     console.log('Add Operation Failed');
+                    var grid = Ext.ComponentQuery.query('customerslist')[0];
+                    grid.getStore().reload();
                 }
             });
             me.up('window').close();

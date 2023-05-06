@@ -93,18 +93,17 @@ Ext.define('RentalApp.view.main.AddMovieModal', {
             var grid = Ext.ComponentQuery.query('movieslist')[0];
             var store = grid.getStore();
             var newMovie = Ext.create('RentalApp.model.Movies', values);
-
-            console.log(newMovie);
-
             store.add(newMovie);
             store.sync({
                 success: function(){
                     Ext.toast('Movie Added.', 'Success');
                     console.log('Add Operation Success');
+                    grid.getStore().reload();
                 },
                 failure: function(){
                     Ext.toast('Failed to Add Movie', 'Failed ');
                     console.log('Add Operation Failed');
+                    grid.getStore().reload();
                 }
             });
             me.up('window').close();

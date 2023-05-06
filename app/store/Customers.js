@@ -16,7 +16,8 @@ Ext.define('RentalApp.store.Customers', {
         useDefaultXhrHeader: false,
         reader: {
             type: 'json',
-            rootProperty: 'data'
+            rootProperty: 'data',
+            totalProperty: 'total'
         },
         writer: {
             type: 'json',
@@ -30,5 +31,5 @@ Ext.define('RentalApp.store.Customers', {
         }
     },
     
-    pageSize: 10
+    pageSize: 10,
 });

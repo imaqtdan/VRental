@@ -28,7 +28,7 @@ Ext.define('RentalApp.view.main.Main', {
 
     header: {
         layout: {
-            align: 'stretchmax'
+            align: 'stretchmax',
         },
         title: {
             bind: {
@@ -74,18 +74,17 @@ Ext.define('RentalApp.view.main.Main', {
     },
 
     items: [{
-        title: 'Customers',
-        iconCls: 'fa-users',
-        // The following grid shares a store with the classic version's grid as well!
-        items: [{
-            xtype: 'customerslist'
-        },]
-    }, {
         title: 'Movies',
         iconCls: 'fa-film',
         items: [{
             xtype: 'movieslist'
         }]
+    }, {
+        title: 'Customers',
+        iconCls: 'fa-users',
+        items: [{
+            xtype: 'customerslist'
+        },]
     }, {
         title: 'Groups',
         iconCls: 'fa-users',
