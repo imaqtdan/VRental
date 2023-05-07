@@ -13,6 +13,9 @@ Ext.define('RentalApp.view.main.MainModel', {
         movies: {
             type: 'movies',
         },
+        rentals: {
+            type: 'rentals',
+        },
         cartItems: {
             storeId: 'cartItems',
             type: 'cartItems'
@@ -23,6 +26,7 @@ Ext.define('RentalApp.view.main.MainModel', {
         name: 'Video Rental',
         customerspage: 'Customer List',
         moviespage: 'Movie List',
+        rentalspage: 'Rental List',
     },
 
     //TODO - add data, formulas and/or methods to support your view

@@ -88,9 +88,9 @@ Ext.define('RentalApp.view.main.Main', {
     }, {
         title: 'Groups',
         iconCls: 'fa-users',
-        bind: {
-            html: '{customerspage}'
-        }
+         items: [{
+             xtype: 'rentalslist'
+         },]
     }, {
         title: 'Settings',
         iconCls: 'fa-cog',

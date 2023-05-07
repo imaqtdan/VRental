@@ -30,5 +30,5 @@ Ext.define('RentalApp.store.Movies', {
         }
     },
 
-    pageSize: 10
+    pageSize: 20
 });
