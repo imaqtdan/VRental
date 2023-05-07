@@ -33,14 +33,25 @@ Ext.define('RentalApp.view.main.MoviesList', {
                 tooltip: 'Add to Cart',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    if (selectedRecord.get('isActive')) {
-                        var cartStore = Ext.getStore('cartItems');
-                        cartStore.add(selectedRecord);
+                    var cartStore = Ext.getStore('cartItems');
+                    var recordIndex = cartStore.findExact('movieId', selectedRecord.get('movieId'));
+                    if (recordIndex > -1) {
+                        Ext.toast('Movie is already in cart', 'Warning');
+                    } else if (selectedRecord.get('isActive')) {
+                        var rentalDate = new Date();
+                        var returnDate = new Date(rentalDate.getTime() + (3 * 24 * 60 * 60 * 1000)); // add 3 days to rental date
+                        cartStore.add({
+                            movieId: selectedRecord.get('movieId'),
+                            title: selectedRecord.get('title'),
+                            rentalPrice: selectedRecord.get('rentalPrice'),
+                            rentalDate: rentalDate,
+                            returnDate: returnDate
+                        });
                         Ext.toast('Movie added to cart', 'Success');
-                        var cartItemsStore = Ext.getStore('cartItems');
                     } else {
                         Ext.toast('Movie is unavailable and cannot be added to cart', 'Error');
                     }
+                console.log(recordIndex);
                 }
             }, {
                 iconCls: 'x-fa fa-edit',
@@ -128,8 +139,13 @@ Ext.define('RentalApp.view.main.MoviesList', {
             iconCls: 'fa fa-shopping-cart',
             text: 'View Cart',
             handler: function() {
-                var rentMovieModal = Ext.create('RentalApp.view.main.RentalCart');
-                rentMovieModal.show();
+                var cartStore = Ext.getStore('cartItems');
+                if (cartStore.getCount() === 0) {
+                    Ext.toast('Cart is empty', 'Warning');
+                } else {
+                    var rentMovieModal = Ext.create('RentalApp.view.main.RentalCart');
+                    rentMovieModal.show();
+                }
             }
         }],
 

@@ -5,58 +5,91 @@ Ext.define('RentalApp.view.main.RentalCart', {
     title: 'Rental Cart',
     modal: true,
     width: 900,
-    layout: 'fit',
     closable: true,
     resizable: false,
     autoShow: true,
 
     items: [{
+        xtype: 'combo',
+        reference: 'customerCombo',
+        fieldLabel: 'Customer',
+        displayField: 'firstName',
+        valueField: 'firstName',
+        bind: {
+            store: '{customers}'
+        },
+        editable: true,
+        typeAhead: true,
+        listeners: {
+            select: function(combo, record, eOpts) {
+                // Handle customer selection
+            }
+        }
+    }, {
+        xtype: 'component',
+        html: '<center><h2>Movies You Will Rent</h2></center>'
+    }, {
         xtype: 'grid',
         reference: 'cartGrid',
         bind: {
             store: '{cartItems}'
         },
         columns: [{
+            sortable: false,
+            menuDisabled: true,
             text: 'Title',
             dataIndex: 'title',
-            flex: 1
+            flex: 3
         }, {
+            sortable: false,
+            menuDisabled: true,
             text: 'Rental Price',
             dataIndex: 'rentalPrice',
             flex: 1,
             xtype: 'numbercolumn',
             format: '₱0.00'
         }, {
-            text: 'Release Date',
-            dataIndex: 'releaseDate',
-            flex: 1,
-            xtype: 'datecolumn',
-            format: 'Y-m-d'
-        }, {
-            xtype: 'actioncolumn',
-            width: 30,
             sortable: false,
             menuDisabled: true,
-            items: [{
-                iconCls: 'x-fa fa-trash',
-                tooltip: 'Remove',
-
-            }]
+            text: 'Rental Date',
+            dataIndex: 'rentalDate',
+            flex: 1,
+            xtype: 'datecolumn',
+            format: 'Y-m-d',
+        }, {
+            sortable: false,
+            menuDisabled: true,
+            text: 'Return Date',
+            dataIndex: 'returnDate',
+            flex: 1,
+            xtype: 'datecolumn',
+            format: 'Y-m-d',
         }],
+
         dockedItems: [{
             xtype: 'toolbar',
             dock: 'bottom',
-            items: ['->', {
-                xtype: 'textfield',
+            items: [{
+                xtype: 'displayfield',
                 fieldLabel: 'Total Rental Price',
                 labelWidth: 120,
-                readOnly: true,
                 bind: {
                     value: '{totalRentalPrice}'
-                },
-                width: 250
+                }
+            }, '->', {
+                xtype: 'button',
+                text: 'Proceed',
+                handler: function() {
+                    // Handle Proceed button click
+                }
+            }, {
+                xtype: 'button',
+                text: 'Cancel',
+                handler: function() {
+                    this.up('window').close();
+                }
             }]
-        }],
+        }]
     }],
 
     listeners: {
