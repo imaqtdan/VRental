@@ -8,13 +8,14 @@ Ext.define('RentalApp.view.main.MainModel', {
 
     stores: {
         customers: {
-            type: 'customers',
+            type: 'customers'
         },
         movies: {
-            type: 'movies',
+            type: 'movies'
         },
         rentals: {
-            type: 'rentals',
+            storeId: 'rentals',
+            type: 'rentals'
         },
         cartItems: {
             storeId: 'cartItems',

@@ -82,57 +82,47 @@ Ext.define('RentalApp.view.main.RentalCart', {
                 handler: function() {
                     var customerCombo = this.up('window').down('combo[reference=customerCombo]');
                     var customer = customerCombo.getValue();
-                  
+                    
                     var cartItemsStore = Ext.getStore('cartItems');
-                  
+                    
                     cartItemsStore.each(function(record) {
-                      record.set('customer', customer);
+                        record.set('customer', customer);
                     });
-                  
+                    
                     var rentalCartData = [];
                     cartItemsStore.each(function(record) {
-                      rentalCartData.push({
-                        rentalId: 0,
-                        customerId: customer,
-                        movieId: record.get('movieId'), 
-                        rentalDate: record.get('rentalDate'),
-                        returnDate: record.get('returnDate'),
-                        rentalCost: record.get('rentalPrice'),
-                        overdueCost: 0,
-                        originId: 2,
-                        rentStatus: false
-                      });
+                        var rentalDate = new Date(record.get('rentalDate'));
+                        var returnDate = new Date(record.get('returnDate'));
+                        rentalCartData.push({
+                            rentalId: 0,
+                            customerId: customer,
+                            movieId: record.get('movieId'), 
+                            rentalDate: rentalDate.toISOString(),
+                            returnDate: returnDate.toISOString(),
+                            rentalCost: record.get('rentalPrice'),
+                            overdueCost: 0,
+                            originId: 2,
+                            rentStatus: false
+                        });
                     });
-                  
+                    
                     console.log(rentalCartData);
-                  
-                    var options = {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify(rentalCartData)
-                    };
-                  
-                    fetch('http://localhost:5283/api/Rentals/New', options)
-                      .then(function(response) {
-                        if (response.ok) {
-                          Ext.toast('Rental cart submitted successfully', 'Success');
-                          cartItemsStore.removeAll();
-                          this.up('window').close();
-                        } else {
-                          Ext.toast('Failed to submit rental cart', 'Error');
+                    
+                    var rentalsStore = Ext.getStore('rentals');
+                    rentalsStore.add(rentalCartData);
+                    rentalsStore.sync({
+                        success: function() {
+                            Ext.toast('Rental cart submitted successfully', 'Success');
+                            cartItemsStore.removeAll();
+                            this.up('window').close();
+                        }.bind(this),
+                        failure: function(batch, options) {
+                            var error = batch.getOperations()[0].getError();
+                            console.log('Error:', error);
+                            Ext.toast('Failed to submit rental cart: ' + error.statusText, 'Error');
                         }
-                        return response.json(); // add this line to parse the response body as JSON
-                      }.bind(this))
-                      .then(function(data) {
-                        console.log(data); // console log the parsed JSON response
-                      })
-                      .catch(function(error) {
-                        console.error('Error:', error);
-                        Ext.toast('Failed to submit rental cart', 'Error');
-                      });
-                  }                                                                      
+                    });
+                }                                                                      
             }, {
                 xtype: 'button',
                 text: 'Cancel',

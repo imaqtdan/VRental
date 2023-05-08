@@ -86,8 +86,8 @@ Ext.define('RentalApp.view.main.Main', {
             xtype: 'customerslist'
         },]
     }, {
-        title: 'Groups',
-        iconCls: 'fa-users',
+        title: 'Rentals',
+        iconCls: 'fa fa-hourglass',
          items: [{
              xtype: 'rentalslist'
          },]
