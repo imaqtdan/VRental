@@ -56,13 +56,6 @@ Ext.define('RentalApp.view.main.AddMovieModal', {
             allowBlank: false,
             maskRe: /[0-9]/,
         }, {
-            xtype: 'textfield',
-            fieldLabel: 'Stock',
-            name: 'stock',
-            bind: '{movie.stock}',
-            allowBlank: false,
-            maskRe: /[0-9]/,
-        }, {
             xtype: 'checkboxfield',
             fieldLabel: 'Availability',
             name: 'isActive',

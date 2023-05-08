@@ -25,9 +25,8 @@ Ext.define('RentalApp.view.main.MoviesList', {
         { text: 'Genre', dataIndex: 'genre', flex: 1 },
         { text: 'Release Date', dataIndex: 'releaseDate', flex: 1, xtype: 'datecolumn', format: 'Y-m-d' },
         { text: 'Rental Price', dataIndex: 'rentalPrice', flex: 1, xtype: 'numbercolumn', format: '₱ 0.00' },
-        { text: 'Stock', dataIndex: 'stock', flex: 1 },
         { text: 'Available', dataIndex: 'isActive', flex: 1, xtype: 'booleancolumn', trueText: 'Available', falseText: 'Unavailable' },
-        { xtype: 'actioncolumn', text: 'Action', flex: 1, layout: { type: 'hbox', pack: 'center', align: 'stretch' },
+        { xtype: 'actioncolumn', text: 'Action', flex: .5, layout: { type: 'hbox', pack: 'center', align: 'stretch' },
             items: [{
                 iconCls: 'fa fa-plus-square',
                 tooltip: 'Add to Cart',
@@ -58,16 +57,11 @@ Ext.define('RentalApp.view.main.MoviesList', {
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    
-                    // Format the releaseDate value to 'Y-m-d' format
-                    var formattedDate = selectedRecord.get('releaseDate') ? Ext.Date.format(new Date(selectedRecord.get('releaseDate')), 'Y-m-d') : null;
-                    
                     var form = Ext.create('RentalApp.view.main.EditMovieModal', {
                         movie: selectedRecord,
                         viewModel: {
                             data: {
                                 movie: selectedRecord,
-                                releaseDate: formattedDate
                             }
                         }
                     });

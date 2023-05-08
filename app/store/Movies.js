@@ -20,7 +20,8 @@ Ext.define('RentalApp.store.Movies', {
         },
         writer: {
             type: 'json',
-            writeAllFields: true
+            writeAllFields: true,
+            dateFormat: 'c'
         },
         actionMethods: {
             create: 'POST',

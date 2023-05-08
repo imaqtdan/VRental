@@ -55,7 +55,7 @@
                 xtype: 'datefield',
                 fieldLabel: 'Release Date',
                 name: 'releaseDate',
-                bind: '{releaseDate}',
+                bind: '{movie.releaseDate}',
                 allowBlank: false,
                 format: 'Y-m-d'
             }, {
@@ -66,13 +66,6 @@
                 allowBlank: false,
                 vtype: 'customDecimal',
                 regex: /^\d+(\.\d{1,2})?$/, // regular expression to allow decimals with up to two decimal places
-            }, {
-                xtype: 'textfield',
-                fieldLabel: 'Stock',
-                name: 'stock',
-                bind: '{movie.stock}',
-                allowBlank: false,
-                maskRe: /[0-9]/,
             }, {
                 xtype: 'checkboxfield',
                 fieldLabel: 'Availability',

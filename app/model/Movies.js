@@ -6,8 +6,8 @@ Ext.define('RentalApp.model.Movies', {
         { name: 'title', type: 'string' },
         { name: 'description', type: 'string' },
         { name: 'genre', type: 'string' },
+        { name: 'releaseDate', type: 'date' },
         { name: 'rentalPrice', type: 'float' },
-        { name: 'stock', type: 'int' },
         { name: 'isActive', type: 'bool' }
     ]
 });
