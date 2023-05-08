@@ -32,48 +32,16 @@ Ext.define('RentalApp.view.main.TransactionsList', {
                 align: 'stretch'
             },
             items: [{
-                iconCls: 'x-fa fa-view',
-                tooltip: 'Edit',
+                iconCls: 'x-fa fa-eye',
+                tooltip: 'View',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    var form = Ext.create('RentalApp.view.main.EditCustomerModal', {
-                        customer: selectedRecord,
-                        viewModel: {
-                            data: {
-                                customer: selectedRecord
-                            }
-                        }
-                    });
-                    form.grid = grid;
-                    form.show();
-                }
-            }, {
-                iconCls: 'x-fa fa-trash',
-                tooltip: 'Delete',
-                handler: function(grid, rowIndex, colIndex, item, e, record) {
-                    var stores = grid.getStore();
-                    var idnum = record.get('rentalId');
-                    Ext.Msg.confirm('Delete Customer', 'Are you sure you want to delete customer: ' + idnum + '?', function(btn) {
-                        if (btn === 'yes') {
-                            var trueid = record.get('rentalId');
-                            record.set('id', trueid);
-                            stores.remove(record);
-                            stores.sync({
-                                success: function(){
-                                    Ext.toast('Rental Date Deleted.', 'Success');
-                                    console.log('Delete Operation Success');
-                                    var grid = Ext.ComponentQuery.query('rentalslist')[0];
-                                    grid.getStore().reload();
-                                },
-                                failure: function(){
-                                    Ext.toast('Failed to Delete Rental Data', 'Failed ');
-                                    console.log('Delete Operation Failed');
-                                    var grid = Ext.ComponentQuery.query('rentalslist')[0];
-                                    grid.getStore().reload();
-                                }
-                            });
-                        }
-                    });
+                    var transactionId = selectedRecord.get('transactionId'); // Get the transaction ID from the selected record
+                    console.log(transactionId);
+                    var rentMovieModal = Ext.create('RentalApp.view.main.TransactionModal', {
+                         transactionId: transactionId // Pass the transactionId to the modal as a config property
+                     });
+                    rentMovieModal.show();
                 }
             }]
         }],

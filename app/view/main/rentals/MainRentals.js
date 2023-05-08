@@ -1,6 +1,6 @@
-Ext.define('RentalApp.view.main.RentalsList', {
+Ext.define('RentalApp.view.main.RentalsListGrid', {
     extend: 'Ext.grid.Panel',
-    xtype: 'rentalslist',
+    xtype: 'rentalslistgrid',
 
     requires: [
         'RentalApp.view.main.MainModel'
@@ -9,7 +9,7 @@ Ext.define('RentalApp.view.main.RentalsList', {
     viewModel: 'main',
 
     bind: {
-        store: '{rentals}'
+        store: '{rentals}',
     },
 
     title: {
@@ -40,11 +40,11 @@ Ext.define('RentalApp.view.main.RentalsList', {
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    var form = Ext.create('RentalApp.view.main.EditCustomerModal', {
-                        customer: selectedRecord,
+                    var form = Ext.create('RentalApp.view.main.EditRentals', {
+                        rental: selectedRecord,
                         viewModel: {
                             data: {
-                                customer: selectedRecord
+                                rental: selectedRecord,
                             }
                         }
                     });
@@ -90,36 +90,6 @@ Ext.define('RentalApp.view.main.RentalsList', {
             dock: 'bottom',
             displayInfo: true
         }],
-
-        tbar: [{
-            xtype: 'textfield',
-            emptyText: 'Search...',
-            reference: 'searchField',
-            width: 250,
-            listeners: {
-                change: 'onSearchFieldChange'
-            }
-        }, {
-            xtype: 'button',
-            text: 'Search',
-            handler: 'onSearchButtonClick'
-        }],
-
-        listeners: {
-            afterrender: function() {
-                var me = this;
-                var rentalsStore = Ext.create('RentalApp.store.Rentals'); // create a new store instance
-                rentalsStore.load({
-                    callback: function(records, operation, success) {
-                        if (success) {
-                            me.getViewModel().set('rentals', rentalsStore); // set the store to the view model
-                        } else {
-                            Ext.toast('Failed to load rentals', 'Failed ');
-                        }
-                    }
-                });
-            }
-        },
         
         //controller: 'rentalslist'
 });

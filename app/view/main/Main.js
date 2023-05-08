@@ -86,12 +86,6 @@ Ext.define('RentalApp.view.main.Main', {
             xtype: 'customerslist'
         },]
     }, {
-        title: 'Rentals',
-        iconCls: 'fa fa-hourglass',
-         items: [{
-             xtype: 'rentalslist'
-         },]
-    }, {
         title: 'Transactions',
         iconCls: 'fa fa-credit-card',
         items: [{
