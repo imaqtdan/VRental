@@ -54,13 +54,13 @@ Ext.define('RentalApp.view.main.MoviesList', {
                                     cartStore.sync({
                                         success: function(){
                                             console.log('Add Operation Success');
-                                            var grid = Ext.ComponentQuery.query('cartlist')[0];
-                                            grid.getStore().reload();
+                                            //var grid = Ext.ComponentQuery.query('cartlist')[0];
+                                            //grid.getStore().reload();
                                         },
                                         failure: function(){
                                             console.log('Add Operation Failed');
-                                            var grid = Ext.ComponentQuery.query('cartlist')[0];
-                                            grid.getStore().reload();
+                                            //var grid = Ext.ComponentQuery.query('cartlist')[0];
+                                            //grid.getStore().reload();
                                         }
                                     });
                                     Ext.toast('Movie added to cart', 'Success');

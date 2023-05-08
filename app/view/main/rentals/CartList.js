@@ -14,7 +14,7 @@ Ext.define('RentalApp.view.main.CartList', {
 
     title: {
         bind: {
-            text: '{rentalspage}'
+            text: '{rentalmovielist}'
         },
     },
 

@@ -64,7 +64,7 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                         returnDate: returnDate.toISOString(),
                                         rentalCost: record.get('rentalPrice'),
                                         overdueCost: 0,
-                                        originId: 2,
+                                        originId: 0,
                                         rentStatus: false
                                     });
                                 });
@@ -72,6 +72,82 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                 rentalsStore.add(rentalCartData);
                                 rentalsStore.sync({
                                     success: function(batch, options) {
+                                        var transactionsStore = Ext.create('RentalApp.store.Transactions');
+                                        var transactionDate = new Date().toISOString();
+                                        var transactionData = {
+                                            transactionId: 0,
+                                            customerId: customer,
+                                            transactionDate: transactionDate,
+                                            transactionAmount: rentalsStore.sum('rentalCost')
+                                        };
+                                        console.log("Transaction Data",transactionData);
+                                        transactionsStore.add(transactionData);
+                                        transactionsStore.sync();
+
+                                        transactionsStore.load({
+                                            callback: function(records, operation, success) {
+                                                if (success && transactionsStore.getCount() > 0) {
+                                                    // Get the latest transaction record
+                                                    var latestTransaction = transactionsStore.last();
+                                                    // Get the ID of the latest transaction
+                                                    var transactionId = latestTransaction.get('transactionId');
+
+                                                    // Set the originId of each rental item in rentalCartData to the transactionId
+                                                    for (var i = 0; i < rentalCartData.length; i++) {
+                                                        rentalCartData[i].originId = transactionId;
+                                                    }
+
+                                                } else {
+                                                    // Failure handler for loading transaction store
+                                                }
+                                            }
+                                        });
+                                        
+                                        console.log(rentalCartData);
+
+                                        // Get the count of the rentalCartData array
+                                        var rentalCartCount = rentalCartData.length;
+                                        console.log("Count of Array",rentalCartCount);
+
+                                        // Get the last rentalId in rentalsStore2
+                                        var rentalsStore2 = Ext.create('RentalApp.store.Rentals');
+                                        rentalsStore2.load({
+                                            callback: function(records, operation, success) {
+                                                var lastRentalId = rentalsStore2.getAt(rentalsStore2.getCount() - 1).get('rentalId');
+                                                var rentalCartCount = rentalCartData.length;
+                                                for (var i = rentalCartCount - 1; i >= 0; i--) {
+                                                    rentalCartData[i].rentalId = lastRentalId - (rentalCartCount - 1 - i);
+                                                    rentalCartData[i].Id = rentalCartData[i].rentalId; // Add a trueId property
+                                                    var rentalRecord = rentalsStore2.findRecord('rentalId', rentalCartData[i].rentalId);
+                                                    if (rentalRecord) {
+                                                        rentalCartData[i].Id = rentalRecord.get('rentalId'); // Set the trueId property
+                                                    }
+                                                }
+                                        
+                                                console.log('Load success?', success);
+                                                if (success) {
+                                                    // Loop through the rentalCartData and update the corresponding rental records
+                                                    for (var i = 0; i < rentalCartData.length; i++) {
+                                                        var rentalRecord = rentalsStore2.findRecord('rentalId', rentalCartData[i].Id); // Use the trueId property
+                                                        if (rentalRecord) {
+                                                            rentalRecord.set(rentalCartData[i]);
+                                                            rentalRecord.set('id', rentalCartData[i].rentalId); // Set the id property to rentalId
+                                                        } else {
+                                                            console.log('Could not find rental record with trueId', rentalCartData[i].Id);
+                                                        }
+                                                    }
+                                                    // Sync the changes to the server
+                                                    rentalsStore2.sync({
+                                                        failure: function(records, operation) {
+                                                            console.log('Sync error');
+                                                        }
+                                                    });
+                                                } else {
+                                                    console.log('Load error');
+                                                }
+                                            }
+                                        });
+
                                         var cartItemsStore = Ext.create('RentalApp.store.CartItems');
                                         cartItemsStore.load({
                                             callback: function(records, operation, success) {
@@ -134,8 +210,15 @@ Ext.define('RentalApp.view.main.RentalCart', {
     },
 
     viewModel: {
-        data: {
-            totalRentalPrice: '₱0.00'
+        formulas: {
+            totalRentalPrice: function(get) {
+                var cartItems = get('cartItems');
+                var total = 0;
+                cartItems.each(function(item) {
+                    total += item.get('rentalPrice');
+                });
+                return '₱' + total.toFixed(2);
+            }
         }
     }
 });

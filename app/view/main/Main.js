@@ -95,7 +95,7 @@ Ext.define('RentalApp.view.main.Main', {
         title: 'Transactions',
         iconCls: 'fa fa-credit-card',
         items: [{
-            xtype: 'cartlist'
+            xtype: 'transactionslist'
         },]
     }]
 });

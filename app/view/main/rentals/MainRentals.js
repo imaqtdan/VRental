@@ -17,7 +17,9 @@ Ext.define('RentalApp.view.main.RentalsList', {
             text: '{rentalspage}'
         },
     },
-
+    width:'100%',
+    height: 700,
+    columnLines:true,
     columns: [
         { text: 'Transaction ID', dataIndex: 'originId', flex: 1 },
         { text: 'Customer ID', dataIndex: 'customerId', flex: 1 },

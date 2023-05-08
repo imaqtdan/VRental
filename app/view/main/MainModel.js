@@ -21,13 +21,19 @@ Ext.define('RentalApp.view.main.MainModel', {
             storeId: 'cartItems',
             type: 'cartItems'
         },
+        transactions: {
+            storeId: 'transactions',
+            type: 'transactions'
+        },
     },
 
     data: {
         name: 'Video Rental',
         customerspage: 'Customer List',
         moviespage: 'Movie List',
+        rentalmovielist: 'List of Movies you will rent.',
         rentalspage: 'Rental List',
+        transactionspage: 'Transactions List',
     },
 
     //TODO - add data, formulas and/or methods to support your view
