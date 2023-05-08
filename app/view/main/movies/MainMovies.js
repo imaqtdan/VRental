@@ -32,40 +32,48 @@ Ext.define('RentalApp.view.main.MoviesList', {
                 tooltip: 'Add to Cart',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    var cartStore = Ext.getStore('cartItems');
-                    var recordIndex = cartStore.findExact('movieId', selectedRecord.get('movieId'));
-                    if (recordIndex > -1) {
-                        Ext.toast('Movie is already in cart', 'Warning');
-                    } else if (selectedRecord.get('isActive')) {
-                        var rentalDate = new Date();
-                        var returnDate = new Date(rentalDate.getTime() + (3 * 24 * 60 * 60 * 1000)); // add 3 days to rental date
-                        var payload = {
-                            movieId: selectedRecord.get('movieId'),
-                            title: selectedRecord.get('title'),
-                            rentalPrice: selectedRecord.get('rentalPrice'),
-                            rentalDate: rentalDate,
-                            returnDate: returnDate
-                        };
-                        console.log(payload);
-                        cartStore.add(payload);
-                        cartStore.sync({
-                            success: function(){
-                                console.log('Add Operation Success');
-                                var grid = Ext.ComponentQuery.query('cartlist')[0];
-                                grid.getStore().reload();
-                            },
-                            failure: function(){
-                                console.log('Add Operation Failed');
-                                var grid = Ext.ComponentQuery.query('cartlist')[0];
-                                grid.getStore().reload();
+                    var cartStore = Ext.create('RentalApp.store.CartItems');
+                    cartStore.load({
+                        callback: function(records, operation, success) {
+                            if (success) {
+                                var recordIndex = cartStore.findExact('movieId', selectedRecord.get('movieId'));
+                                if (recordIndex > -1) {
+                                    Ext.toast('Movie is already in cart', 'Warning');
+                                } else if (selectedRecord.get('isActive')) {
+                                    var rentalDate = new Date();
+                                    var returnDate = new Date(rentalDate.getTime() + (3 * 24 * 60 * 60 * 1000)); // add 3 days to rental date
+                                    var payload = {
+                                        movieId: selectedRecord.get('movieId'),
+                                        title: selectedRecord.get('title'),
+                                        rentalPrice: selectedRecord.get('rentalPrice'),
+                                        rentalDate: rentalDate,
+                                        returnDate: returnDate
+                                    };
+                                    console.log(payload);
+                                    cartStore.add(payload);
+                                    cartStore.sync({
+                                        success: function(){
+                                            console.log('Add Operation Success');
+                                            var grid = Ext.ComponentQuery.query('cartlist')[0];
+                                            grid.getStore().reload();
+                                        },
+                                        failure: function(){
+                                            console.log('Add Operation Failed');
+                                            var grid = Ext.ComponentQuery.query('cartlist')[0];
+                                            grid.getStore().reload();
+                                        }
+                                    });
+                                    Ext.toast('Movie added to cart', 'Success');
+                                } else {
+                                    Ext.toast('Movie is unavailable and cannot be added to cart', 'Error');
+                                }
+                                console.log(recordIndex);
+                            } else {
+                                console.log('Loading cartStore failed');
                             }
-                        });
-                        Ext.toast('Movie added to cart', 'Success');
-                    } else {
-                        Ext.toast('Movie is unavailable and cannot be added to cart', 'Error');
-                    }
-                    console.log(recordIndex);
-                }
+                        }
+                    });
+                }                               
             }, {
                 iconCls: 'x-fa fa-edit',
                 tooltip: 'Edit',
@@ -148,13 +156,21 @@ Ext.define('RentalApp.view.main.MoviesList', {
             iconCls: 'fa fa-shopping-cart',
             text: 'View Cart',
             handler: function() {
-                var cartStore = Ext.getStore('cartItems');
-                if (cartStore.getCount() === 0) {
-                    Ext.toast('Cart is empty', 'Warning');
-                } else {
-                    var rentMovieModal = Ext.create('RentalApp.view.main.RentalCart');
-                    rentMovieModal.show();
-                }
+                var cartStore = Ext.create('RentalApp.store.CartItems');
+                cartStore.load({
+                    callback: function(records, operation, success) {
+                        if (success) {
+                            if (cartStore.getCount() === 0) {
+                                Ext.toast('Cart is empty', 'Warning');
+                            } else {
+                                var rentMovieModal = Ext.create('RentalApp.view.main.RentalCart');
+                                rentMovieModal.show();
+                            }
+                        } else {
+                            Ext.toast('Failed to load Cart Items', 'Failed ');
+                        }
+                    }
+                });
             }
         }],
 

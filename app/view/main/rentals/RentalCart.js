@@ -84,6 +84,8 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                     cartItemsStore.sync();
                                                     me.getViewModel().set('cartItems', cartItemsStore);
                                                     Ext.toast('Rental Cart submitted successfully', 'Success');
+                                                    var grid = Ext.ComponentQuery.query('rentalslist')[0];
+                                                    grid.getStore().reload();
                                                     me.close();
                                                 } else {
                                                     Ext.toast('Failed to remove cart items: no records found', 'Error');
