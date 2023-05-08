@@ -39,18 +39,32 @@ Ext.define('RentalApp.view.main.MoviesList', {
                     } else if (selectedRecord.get('isActive')) {
                         var rentalDate = new Date();
                         var returnDate = new Date(rentalDate.getTime() + (3 * 24 * 60 * 60 * 1000)); // add 3 days to rental date
-                        cartStore.add({
+                        var payload = {
                             movieId: selectedRecord.get('movieId'),
                             title: selectedRecord.get('title'),
                             rentalPrice: selectedRecord.get('rentalPrice'),
                             rentalDate: rentalDate,
                             returnDate: returnDate
+                        };
+                        console.log(payload);
+                        cartStore.add(payload);
+                        cartStore.sync({
+                            success: function(){
+                                console.log('Add Operation Success');
+                                var grid = Ext.ComponentQuery.query('cartlist')[0];
+                                grid.getStore().reload();
+                            },
+                            failure: function(){
+                                console.log('Add Operation Failed');
+                                var grid = Ext.ComponentQuery.query('cartlist')[0];
+                                grid.getStore().reload();
+                            }
                         });
                         Ext.toast('Movie added to cart', 'Success');
                     } else {
                         Ext.toast('Movie is unavailable and cannot be added to cart', 'Error');
                     }
-                console.log(recordIndex);
+                    console.log(recordIndex);
                 }
             }, {
                 iconCls: 'x-fa fa-edit',
@@ -117,6 +131,7 @@ Ext.define('RentalApp.view.main.MoviesList', {
             listeners: {
                 change: 'onSearchFieldChange'
             }
+
         }, {
             xtype: 'button',
             text: 'Search',

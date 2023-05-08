@@ -20,51 +20,13 @@ Ext.define('RentalApp.view.main.RentalCart', {
         },
         editable: true,
         typeAhead: true,
-        listeners: {
-            select: function(combo, record, eOpts) {
-                // Handle customer selection
-            }
-        }
     }, {
-        xtype: 'component',
-        html: '<center><h2>Movies You Will Rent</h2></center>'
-    }, {
-        xtype: 'grid',
-        reference: 'cartGrid',
+        xtype: 'cartlist',
+        reference: 'cartList',
         bind: {
             store: '{cartItems}'
-        },
-        columns: [{
-            sortable: false,
-            menuDisabled: true,
-            text: 'Title',
-            dataIndex: 'title',
-            flex: 3
-        }, {
-            sortable: false,
-            menuDisabled: true,
-            text: 'Rental Price',
-            dataIndex: 'rentalPrice',
-            flex: 1,
-            xtype: 'numbercolumn',
-            format: '₱0.00'
-        }, {
-            sortable: false,
-            menuDisabled: true,
-            text: 'Rental Date',
-            dataIndex: 'rentalDate',
-            flex: 1,
-            xtype: 'datecolumn',
-            format: 'Y-m-d',
-        }, {
-            sortable: false,
-            menuDisabled: true,
-            text: 'Return Date',
-            dataIndex: 'returnDate',
-            flex: 1,
-            xtype: 'datecolumn',
-            format: 'Y-m-d',
-        }],
+        }
+    }, {
 
         dockedItems: [{
             xtype: 'toolbar',
@@ -80,49 +42,67 @@ Ext.define('RentalApp.view.main.RentalCart', {
                 xtype: 'button',
                 text: 'Proceed',
                 handler: function() {
-                    var customerCombo = this.up('window').down('combo[reference=customerCombo]');
-                    var customer = customerCombo.getValue();
-                    
-                    var cartItemsStore = Ext.getStore('cartItems');
-                    
-                    cartItemsStore.each(function(record) {
-                        record.set('customer', customer);
-                    });
-                    
-                    var rentalCartData = [];
-                    cartItemsStore.each(function(record) {
-                        var rentalDate = new Date(record.get('rentalDate'));
-                        var returnDate = new Date(record.get('returnDate'));
-                        rentalCartData.push({
-                            rentalId: 0,
-                            customerId: customer,
-                            movieId: record.get('movieId'), 
-                            rentalDate: rentalDate.toISOString(),
-                            returnDate: returnDate.toISOString(),
-                            rentalCost: record.get('rentalPrice'),
-                            overdueCost: 0,
-                            originId: 2,
-                            rentStatus: false
-                        });
-                    });
-                    
-                    console.log(rentalCartData);
-                    
-                    var rentalsStore = Ext.getStore('rentals');
-                    rentalsStore.add(rentalCartData);
-                    rentalsStore.sync({
-                        success: function() {
-                            Ext.toast('Rental cart submitted successfully', 'Success');
-                            cartItemsStore.removeAll();
-                            this.up('window').close();
-                        }.bind(this),
-                        failure: function(batch, options) {
-                            var error = batch.getOperations()[0].getError();
-                            console.log('Error:', error);
-                            Ext.toast('Failed to submit rental cart: ' + error.statusText, 'Error');
+                    var me = this.up('window');
+                    var customerCombo = me.down('combo[reference=customerCombo]');
+                    var customer = customerCombo.getValue();  
+                    var cartItemsStore = Ext.create('RentalApp.store.CartItems');
+                    cartItemsStore.load({
+                        callback: function(records, operation, success) {
+                            if (success) {
+                                cartItemsStore.each(function(record) {
+                                    record.set('customer', customer);
+                                });
+                                var rentalCartData = [];
+                                cartItemsStore.each(function(record) {
+                                    var rentalDate = new Date(record.get('rentalDate'));
+                                    var returnDate = new Date(record.get('returnDate'));
+                                    rentalCartData.push({
+                                        rentalId: 0,
+                                        customerId: customer,
+                                        movieId: record.get('movieId'), 
+                                        rentalDate: rentalDate.toISOString(),
+                                        returnDate: returnDate.toISOString(),
+                                        rentalCost: record.get('rentalPrice'),
+                                        overdueCost: 0,
+                                        originId: 2,
+                                        rentStatus: false
+                                    });
+                                });
+                                var rentalsStore = Ext.getStore('rentals');
+                                rentalsStore.add(rentalCartData);
+                                rentalsStore.sync({
+                                    success: function(batch, options) {
+                                        var cartItemsStore = Ext.create('RentalApp.store.CartItems');
+                                        cartItemsStore.load({
+                                            callback: function(records, operation, success) {
+                                                if (success && cartItemsStore.getCount() > 0) {
+                                                    cartItemsStore.each(function(record) {
+                                                        var trueid = record.get('cartId');
+                                                        record.set('id', trueid);
+                                                    });
+                                                    cartItemsStore.removeAll();
+                                                    cartItemsStore.sync();
+                                                    me.getViewModel().set('cartItems', cartItemsStore);
+                                                    Ext.toast('Rental Cart submitted successfully', 'Success');
+                                                    me.close();
+                                                } else {
+                                                    Ext.toast('Failed to remove cart items: no records found', 'Error');
+                                                }
+                                            }
+                                        });
+                                    },
+                                    failure: function(batch, options) {
+                                        var error = batch.getOperations()[0].getError();
+                                        console.log('Error:', error);
+                                        Ext.toast('Failed to submit rental cart: ' + error.statusText, 'Error');
+                                    }
+                                });
+                            } else {
+                                Ext.toast('Failed to load Cart Items', 'Failed');
+                            }
                         }
                     });
-                }                                                                      
+                }
             }, {
                 xtype: 'button',
                 text: 'Cancel',
@@ -134,15 +114,21 @@ Ext.define('RentalApp.view.main.RentalCart', {
     }],
 
     listeners: {
-        show: function() {
-            var cartItemsStore = Ext.getStore('cartItems');
-            var sum = 0;
-            cartItemsStore.each(function(record) {
-                sum += record.get('rentalPrice');
+        afterrender: function() {
+            var me = this;
+            var cartItemsStore = Ext.create('RentalApp.store.CartItems');
+            cartItemsStore.load({
+                callback: function(records, operation, success) {
+                    if (success) {
+                        me.getViewModel().set('cartItems', cartItemsStore);
+                    } else {
+                        Ext.toast('Failed to load Cart Items', 'Failed ');
+                    }
+                }
             });
-            this.getViewModel().set('totalRentalPrice', '₱' + sum.toFixed(2));
-            this.down('grid').setStore(cartItemsStore);
-        }
+            console.log("TEST", cartItemsStore);
+        },
+        
     },
 
     viewModel: {

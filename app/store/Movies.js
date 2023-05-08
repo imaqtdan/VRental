@@ -30,6 +30,6 @@ Ext.define('RentalApp.store.Movies', {
             destroy: 'DELETE'
         }
     },
-
+    
     pageSize: 20
 });

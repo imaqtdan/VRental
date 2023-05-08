@@ -92,10 +92,10 @@ Ext.define('RentalApp.view.main.Main', {
              xtype: 'rentalslist'
          },]
     }, {
-        title: 'Settings',
-        iconCls: 'fa-cog',
-        bind: {
-            html: '{customerspage}'
-        }
+        title: 'Transactions',
+        iconCls: 'fa fa-credit-card',
+        items: [{
+            xtype: 'cartlist'
+        },]
     }]
 });

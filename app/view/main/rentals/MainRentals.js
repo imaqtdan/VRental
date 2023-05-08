@@ -19,8 +19,7 @@ Ext.define('RentalApp.view.main.RentalsList', {
     },
 
     columns: [
-        //{ text: 'ID',  dataIndex: 'customerId', flex: 1 },
-        { text: 'Origin ID', dataIndex: 'originId', flex: 1 },
+        { text: 'Transaction ID', dataIndex: 'originId', flex: 1 },
         { text: 'Customer ID', dataIndex: 'customerId', flex: 1 },
         { text: 'Movie ID', dataIndex: 'movieId', flex: 1 },
         { text: 'Rental Date', dataIndex: 'rentalDate', flex: 1, xtype: 'datecolumn', format: 'Y-m-d' },
