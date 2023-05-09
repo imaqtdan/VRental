@@ -90,25 +90,24 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                     var latestTransaction = transactionsStore.last();
                                                     // Get the ID of the latest transaction
                                                     var transactionId = latestTransaction.get('transactionId');
-
                                                     // Set the originId of each rental item in rentalCartData to the transactionId
                                                     for (var i = 0; i < rentalCartData.length; i++) {
                                                         rentalCartData[i].originId = transactionId;
                                                     }
-
                                                     var grid = Ext.ComponentQuery.query('transactionslist')[0];
                                                     grid.getStore().reload();
-
                                                 } else {
-                                                    // Failure handler for loading transaction store
+                                                    console.log("Hindi nag load ang transaction Store.");
                                                 }
                                             }
                                         });
+
                                         // Get the count of the rentalCartData array
                                         var rentalCartCount = rentalCartData.length;
                                         console.log("Count of Array",rentalCartCount);
+
                                         setTimeout(function() {
-                                        // Get the last rentalId in rentalsStore2
+                                        // Get the last rentalId in rentalsStore
                                         var rentalsStore2 = Ext.create('RentalApp.store.Rentals');
                                         rentalsStore2.load({
                                             callback: function(records, operation, success) {

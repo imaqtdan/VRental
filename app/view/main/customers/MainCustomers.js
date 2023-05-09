@@ -21,6 +21,7 @@ Ext.define('RentalApp.view.main.CustomersList', {
     height: 700,
     columnLines:true,
     columns: [
+        { text: 'ID', dataIndex: 'customerId', flex: 1 },
         { text: 'First Name', dataIndex: 'firstName', flex: 1 },
         { text: 'Last Name', dataIndex: 'lastName', flex: 1 },
         { text: 'Email Address', dataIndex: 'emailAddress', flex: 1 },
