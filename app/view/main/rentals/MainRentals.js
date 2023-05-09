@@ -1,6 +1,6 @@
-Ext.define('RentalApp.view.main.RentalsListGrid', {
+Ext.define('RentalApp.view.main.RentalsList', {
     extend: 'Ext.grid.Panel',
-    xtype: 'rentalslistgrid',
+    xtype: 'rentalslist',
 
     requires: [
         'RentalApp.view.main.MainModel'

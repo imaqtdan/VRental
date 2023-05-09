@@ -34,10 +34,10 @@ Ext.define('RentalApp.view.main.EditRentals', {
             allowBlank: false,
         }, {
             xtype: 'checkboxfield',
-            fieldLabel: 'Returned',
+            fieldLabel: '',
             name: 'rentStatus',
             bind: '{rental.rentStatus}',
-            boxLabel: 'Available',
+            boxLabel: 'Check if its already returned.',
             inputValue: true,
             uncheckedValue: false,
             allowBlank: false
@@ -64,13 +64,11 @@ Ext.define('RentalApp.view.main.EditRentals', {
             var store = me.up('window').grid.getStore();
             store.sync({
                 success: function(){
-                    Ext.toast('Movie Updated.', 'Success');
+                    Ext.toast('Renting Status Updated.', 'Success');
                     console.log('Update Operation Success');
                 },
                 failure: function(){
-                    Ext.toast('Failed to Update Movie', 'Failed');
-                    var grid = Ext.ComponentQuery.query('movieslist')[0];
-                    grid.getStore().reload();
+                    Ext.toast('Failed to Returned', 'Failed')
                     console.log('Update Operation Failed');
                 }
             });

@@ -83,7 +83,6 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                         console.log("Transaction Data",transactionData);
                                         transactionsStore.add(transactionData);
                                         transactionsStore.sync();
-
                                         transactionsStore.load({
                                             callback: function(records, operation, success) {
                                                 if (success && transactionsStore.getCount() > 0) {
@@ -97,18 +96,18 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                         rentalCartData[i].originId = transactionId;
                                                     }
 
+                                                    var grid = Ext.ComponentQuery.query('transactionslist')[0];
+                                                    grid.getStore().reload();
+
                                                 } else {
                                                     // Failure handler for loading transaction store
                                                 }
                                             }
                                         });
-                                        
-                                        console.log(rentalCartData);
-
                                         // Get the count of the rentalCartData array
                                         var rentalCartCount = rentalCartData.length;
                                         console.log("Count of Array",rentalCartCount);
-
+                                        setTimeout(function() {
                                         // Get the last rentalId in rentalsStore2
                                         var rentalsStore2 = Ext.create('RentalApp.store.Rentals');
                                         rentalsStore2.load({
@@ -123,7 +122,7 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                         rentalCartData[i].Id = rentalRecord.get('rentalId'); // Set the trueId property
                                                     }
                                                 }
-                                        
+
                                                 console.log('Load success?', success);
                                                 if (success) {
                                                     // Loop through the rentalCartData and update the corresponding rental records
@@ -136,17 +135,26 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                             console.log('Could not find rental record with trueId', rentalCartData[i].Id);
                                                         }
                                                     }
-                                                    // Sync the changes to the server
-                                                    rentalsStore2.sync({
-                                                        failure: function(records, operation) {
-                                                            console.log('Sync error');
-                                                        }
-                                                    });
+                                                                                            
+                                                    console.log("PAYLOAD BEFORE SYNC",rentalCartData);
+                                                    
+                                                    
+                                                        rentalsStore2.sync({
+                                                            success: function(batch, options) {
+                                                                console.log('Sync success');
+                                                            },
+                                                            failure: function(batch, options) {
+                                                                console.log('Sync error');
+                                                                var error = batch.exceptions[0].getError(); // Get the error message
+                                                                console.log(error);
+                                                            }
+                                                        });
                                                 } else {
                                                     console.log('Load error');
                                                 }
                                             }
                                         });
+                                        }, 2000);
 
                                         var cartItemsStore = Ext.create('RentalApp.store.CartItems');
                                         cartItemsStore.load({
@@ -160,8 +168,8 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                     cartItemsStore.sync();
                                                     me.getViewModel().set('cartItems', cartItemsStore);
                                                     Ext.toast('Rental Cart submitted successfully', 'Success');
-                                                    var grid = Ext.ComponentQuery.query('rentalslist')[0];
-                                                    grid.getStore().reload();
+                                                    // var grid = Ext.ComponentQuery.query('rentalslist')[0];
+                                                    // grid.getStore().reload();
                                                     me.close();
                                                 } else {
                                                     Ext.toast('Failed to remove cart items: no records found', 'Error');
@@ -204,7 +212,6 @@ Ext.define('RentalApp.view.main.RentalCart', {
                     }
                 }
             });
-            console.log("TEST", cartItemsStore);
         },
         
     },

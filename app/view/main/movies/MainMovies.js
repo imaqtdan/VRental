@@ -18,7 +18,9 @@ Ext.define('RentalApp.view.main.MoviesList', {
         },
         flex: 0
     },
-
+    width:'100%',
+    height: 700,
+    columnLines:true,
     columns: [
         { text: 'Title', dataIndex: 'title', flex: 1 },
         { text: 'Description', dataIndex: 'description', flex: 1     },
@@ -49,25 +51,12 @@ Ext.define('RentalApp.view.main.MoviesList', {
                                         rentalDate: rentalDate,
                                         returnDate: returnDate
                                     };
-                                    console.log(payload);
                                     cartStore.add(payload);
-                                    cartStore.sync({
-                                        success: function(){
-                                            console.log('Add Operation Success');
-                                            //var grid = Ext.ComponentQuery.query('cartlist')[0];
-                                            //grid.getStore().reload();
-                                        },
-                                        failure: function(){
-                                            console.log('Add Operation Failed');
-                                            //var grid = Ext.ComponentQuery.query('cartlist')[0];
-                                            //grid.getStore().reload();
-                                        }
-                                    });
+                                    cartStore.sync();
                                     Ext.toast('Movie added to cart', 'Success');
                                 } else {
                                     Ext.toast('Movie is unavailable and cannot be added to cart', 'Error');
                                 }
-                                console.log(recordIndex);
                             } else {
                                 console.log('Loading cartStore failed');
                             }
