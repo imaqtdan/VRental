@@ -2,24 +2,33 @@ Ext.define('RentalApp.view.main.TransactionModal', {
     extend: 'Ext.window.Window',
     xtype: 'transactionmodal',
 
-    title: 'Transaction',
+
+    config: {
+        transactionId: null,
+        transactionData: null
+    },
+
+    title: {
+        bind: 'Transaction # ' + '{transactionData.transactionId}'
+    },
+
     modal: true,
-    width: 900,
+    width: '100%',
     closable: true,
     resizable: false,
     autoShow: true,
 
-    config: {
-        transactionId: null
-    },
-
-    viewModel: {
-        data: {
-            rentals: null
-        }
-    },
-
     items: [{
+        xtype: 'displayfield',
+        fieldLabel: 'Customer#',
+        labelWidth: 120,
+        bind: '{transactionData.customerId}'
+    }, {
+        xtype: 'displayfield',
+        fieldLabel: 'Total Rental Price:',
+        labelWidth: 120,
+        bind: '₱ {transactionData.transactionAmount}'
+    }, {
         xtype: 'rentalslist',
         reference: 'rentalslist',
         bind: {
@@ -36,7 +45,7 @@ Ext.define('RentalApp.view.main.TransactionModal', {
 
     listeners: {
     afterrender: function() {
-        var me = this;
+        var me = this;  
         var rentalsStore = Ext.create('RentalApp.store.Rentals'); // create a new store instance
         rentalsStore.load({
             callback: function(records, operation, success) {

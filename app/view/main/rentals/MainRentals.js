@@ -3,7 +3,7 @@ Ext.define('RentalApp.view.main.RentalsList', {
     xtype: 'rentalslist',
 
     requires: [
-        'RentalApp.view.main.MainModel'
+        'RentalApp.view.main.MainModel',
     ],
 
     viewModel: 'main',
@@ -17,19 +17,17 @@ Ext.define('RentalApp.view.main.RentalsList', {
             text: '{rentalspage}'
         },
     },
+    
     width:'100%',
     height: 700,
     columnLines:true,
     columns: [
-        { text: 'Transaction ID', dataIndex: 'originId', flex: 1 },
-        { text: 'Customer ID', dataIndex: 'customerId', flex: 1 },
-        { text: 'Movie ID', dataIndex: 'movieId', flex: 1 },
+        { text: 'Movie ID', dataIndex: 'movieId', flex: .3 },
         { text: 'Rental Date', dataIndex: 'rentalDate', flex: 1, xtype: 'datecolumn', format: 'Y-m-d' },
-        { text: 'Return Date', dataIndex: 'returnDate', flex: 1, xtype: 'datecolumn', format: 'Y-m-d' },
-        { text: 'Rental Cost', dataIndex: 'rentalCost', flex: 1, xtype: 'numbercolumn', format: '₱ 0.00' },
-        { text: 'Overdue Cost', dataIndex: 'overdueCost', flex: 1, xtype: 'numbercolumn', format: '₱ 0.00' },
-        { text: 'Rent Status', dataIndex: 'rentStatus', flex: 1, xtype: 'booleancolumn', trueText: 'Returned', falseText: 'On Rent' },
-        { xtype: 'actioncolumn', text: 'Action', flex: 1,
+        { text: 'Expected Return Date', dataIndex: 'returnDate', flex: 1, xtype: 'datecolumn', format: 'Y-m-d' },
+        { text: 'Rental Cost', dataIndex: 'rentalCost', flex: .5, xtype: 'numbercolumn', format: '₱ 0.00' },
+        { text: 'Rent Status', dataIndex: 'rentStatus', flex: .3, xtype: 'booleancolumn', trueText: 'Returned', falseText: 'On Rent' },
+        { xtype: 'actioncolumn', text: 'Action', flex: .3,
             layout: {
                 type: 'hbox',
                 pack: 'center',
@@ -57,14 +55,14 @@ Ext.define('RentalApp.view.main.RentalsList', {
                 handler: function(grid, rowIndex, colIndex, item, e, record) {
                     var stores = grid.getStore();
                     var idnum = record.get('rentalId');
-                    Ext.Msg.confirm('Delete Customer', 'Are you sure you want to delete customer: ' + idnum + '?', function(btn) {
+                    Ext.Msg.confirm('Delete Data', 'Are you sure you want to delete rental id: ' + idnum + '?', function(btn) {
                         if (btn === 'yes') {
                             var trueid = record.get('rentalId');
                             record.set('id', trueid);
                             stores.remove(record);
                             stores.sync({
                                 success: function(){
-                                    Ext.toast('Rental Date Deleted.', 'Success');
+                                    Ext.toast('Rental Data Deleted.', 'Success');
                                     console.log('Delete Operation Success');
                                     var grid = Ext.ComponentQuery.query('rentalslist')[0];
                                     grid.getStore().reload();
@@ -89,7 +87,5 @@ Ext.define('RentalApp.view.main.RentalsList', {
             },
             dock: 'bottom',
             displayInfo: true
-        }],
-        
-        //controller: 'rentalslist'
+        }]
 });

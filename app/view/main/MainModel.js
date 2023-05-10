@@ -1,6 +1,3 @@
-/**
- * This class is the view model for the Main view of the application.
- */
 Ext.define('RentalApp.view.main.MainModel', {
     extend: 'Ext.app.ViewModel',
 
@@ -11,6 +8,7 @@ Ext.define('RentalApp.view.main.MainModel', {
             type: 'customers'
         },
         movies: {
+            storeId: 'movies',
             type: 'movies'
         },
         rentals: {
@@ -36,5 +34,4 @@ Ext.define('RentalApp.view.main.MainModel', {
         transactionspage: 'Transactions List',
     },
 
-    //TODO - add data, formulas and/or methods to support your view
 });

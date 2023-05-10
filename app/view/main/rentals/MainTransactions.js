@@ -9,7 +9,7 @@ Ext.define('RentalApp.view.main.TransactionsList', {
     viewModel: 'main',
 
     bind: {
-        store: '{transactions}'
+        store: '{transactions}',
     },
 
     title: {
@@ -36,11 +36,17 @@ Ext.define('RentalApp.view.main.TransactionsList', {
                 tooltip: 'View',
                 handler: function(grid, rowIndex, colIndex) {
                     var selectedRecord = grid.getStore().getAt(rowIndex);
-                    var transactionId = selectedRecord.get('transactionId'); // Get the transaction ID from the selected record
-                    console.log(transactionId);
+                    var transactionId = selectedRecord.get('transactionId');
                     var rentMovieModal = Ext.create('RentalApp.view.main.TransactionModal', {
-                         transactionId: transactionId // Pass the transactionId to the modal as a config property
-                     });
+                        transactionId: transactionId,
+                        transactionData: selectedRecord,
+                        viewModel: {
+                            data: {
+                                transactionData: selectedRecord,
+                            }
+                        }
+                    });
+                    rentMovieModal.grid = grid;
                     rentMovieModal.show();
                 }
             }]

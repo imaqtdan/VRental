@@ -7,14 +7,15 @@ Ext.define('RentalApp.view.main.RentalCart', {
     width: 900,
     closable: true,
     resizable: false,
-    autoShow: true,
 
     items: [{
         xtype: 'combo',
+        margin: '5 0 0 5', // Adds 20 pixels of margin at the top
         reference: 'customerCombo',
-        fieldLabel: 'Customer',
-        displayField: 'customerId',
+        fieldLabel: 'Choose Customer',
+        displayField: 'fullName',
         valueField: 'customerId',
+        labelWidth: 120,
         bind: {
             store: '{customers}'
         },
@@ -70,6 +71,8 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                 });
                                 var rentalsStore = Ext.getStore('rentals');
                                 rentalsStore.add(rentalCartData);
+                                console.log("MAY LAMAN BA? ============== ",rentalCartData);
+                                //--------------------------------------------------------------- Add to Rental
                                 rentalsStore.sync({
                                     success: function(batch, options) {
                                         var transactionsStore = Ext.create('RentalApp.store.Transactions');
@@ -82,6 +85,7 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                         };
                                         console.log("Transaction Data",transactionData);
                                         transactionsStore.add(transactionData);
+                                        //--------------------------------------------------------- Add to Transaction
                                         transactionsStore.sync();
                                         transactionsStore.load({
                                             callback: function(records, operation, success) {
@@ -121,7 +125,6 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                         rentalCartData[i].Id = rentalRecord.get('rentalId'); // Set the trueId property
                                                     }
                                                 }
-
                                                 console.log('Load success?', success);
                                                 if (success) {
                                                     // Loop through the rentalCartData and update the corresponding rental records
@@ -133,11 +136,8 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                         } else {
                                                             console.log('Could not find rental record with trueId', rentalCartData[i].Id);
                                                         }
-                                                    }
-                                                                                            
+                                                    }                                     
                                                     console.log("PAYLOAD BEFORE SYNC",rentalCartData);
-                                                    
-                                                    
                                                         rentalsStore2.sync({
                                                             success: function(batch, options) {
                                                                 console.log('Sync success');
@@ -153,7 +153,7 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                 }
                                             }
                                         });
-                                        }, 2000);
+                                        }, 1500);
 
                                         var cartItemsStore = Ext.create('RentalApp.store.CartItems');
                                         cartItemsStore.load({
@@ -167,8 +167,6 @@ Ext.define('RentalApp.view.main.RentalCart', {
                                                     cartItemsStore.sync();
                                                     me.getViewModel().set('cartItems', cartItemsStore);
                                                     Ext.toast('Rental Cart submitted successfully', 'Success');
-                                                    // var grid = Ext.ComponentQuery.query('rentalslist')[0];
-                                                    // grid.getStore().reload();
                                                     me.close();
                                                 } else {
                                                     Ext.toast('Failed to remove cart items: no records found', 'Error');
